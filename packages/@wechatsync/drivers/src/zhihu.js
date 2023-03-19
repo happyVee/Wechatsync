@@ -1,50 +1,3 @@
-// function escapeHtml(text) {
-//   return text
-//     .replace(/&/g, '&amp;')
-//     .replace(/</g, '&lt;')
-//     .replace(/>/g, '&gt;')
-//     .replace(/"/g, '&quot;')
-//     .replace(/'/g, '&#039;')
-// }
-
-// function getChildren(obj, count) {
-//   count++
-//   if (count > 4) return null
-//   if (obj.children().length > 1) return obj
-//   return getChildren(obj.children().eq(0), count)
-// }
-
-// function CodeBlockToPlainTextOther(pre) {
-//   var text = []
-//   var minSub = getChildren(pre, 0)
-//   var lines = minSub.children()
-//   for (let index = 0; index < lines.length; index++) {
-//     const element = lines.eq(index)
-//     const codeStr = element.text()
-//     text.push('<code>' + escapeHtml(codeStr) + '</code>')
-//   }
-//   return text.join('\n')
-// }
-
-// function CodeBlockToPlainText(pre) {
-//   var text = []
-//   var minSub = getChildren(pre, 0)
-//   var lines = pre.find('code')
-//   if (lines.length > 1) {
-//     return CodeBlockToPlainTextOther(pre)
-//   }
-
-//   for (let index = 0; index < lines.length; index++) {
-//     const element = lines.eq(index)
-//     const codeStr = element[0].innerText
-//     console.log('codeStr', codeStr)
-//     var codeLines = codeStr.split('\n')
-//     codeLines.forEach((codeLine) => {
-//       text.push('<code>' + escapeHtml(codeLine) + '</code>')
-//     })
-//   }
-//   return text.join('\n')
-// }
 
 export default class ZhiHuAdapter {
   constructor() {
@@ -92,6 +45,12 @@ export default class ZhiHuAdapter {
 
   async editPost(post_id, post) {
     console.log('editPost', post.post_thumbnail)
+
+    // 移除多余的空行
+    post.post_content = post.post_content.replace(/\n(\n)*( )*(\n)*\n/g, '');
+
+    console.log('editPost post.post_content', post.post_content)
+
     var res = await $.ajax({
       url: 'https://zhuanlan.zhihu.com/api/articles/' + post_id + '/draft',
       type: 'PATCH',
@@ -223,18 +182,7 @@ export default class ZhiHuAdapter {
     // var org = $(post.content);
     // var doc = $('<div>').append(org.clone());
     var doc = div
-    // var pres = doc.find('pre')
-    // console.log('find code blocks', pres.length, post)
-    // for (let mindex = 0; mindex < pres.length; mindex++) {
-    //   const pre = pres.eq(mindex)
-    //   try {
-    //     var newHtml = CodeBlockToPlainText(pre, 0)
-    //     if (newHtml) {
-    //       console.log(newHtml)
-    //       pre.html(newHtml)
-    //     }
-    //   } catch (e) {}
-    // }
+
     tools.doPreFilter(div)
     tools.processDocCode(div)
 
@@ -281,52 +229,6 @@ export default class ZhiHuAdapter {
       // try to replace as h2;
     }
 
-    // var highlightTitle = function () {
-    //   var strongTag = $obj.find('strong').eq(0)
-    //   var childStrongText = strongTag.text()
-    //   var isHead = false
-    //   if (originalText == childStrongText) {
-    //     var strongSize = null
-    //     var tagStart = strongTag
-    //     var align = null
-    //     for (let index = 0; index < 4; index++) {
-    //       var fontSize = tagStart.css('font-size')
-    //       var textAlign = tagStart.css('text-align')
-    //       if (fontSize) {
-    //         strongSize = fontSize
-    //       }
-    //       if (textAlign) {
-    //         align = textAlign
-    //       }
-    //       if (align && strongSize) break
-    //       if (tagStart == $obj) {
-    //         console.log('near top')
-    //         break
-    //       }
-    //       tagStart = tagStart.parent()
-    //     }
-    //     if (strongSize) {
-    //       var theFontSize = parseInt(strongSize)
-    //       if (theFontSize > 15 && align == 'center') {
-    //         // var newTag = $('<h2></h2>').append($obj.html())
-    //         // $obj.after(newTag).remove()
-    //         isHead = true;
-    //       }
-    //     }
-    //   }
-    //   if (isHead) {
-    //     var NewElement = $("<h2 />");
-    //     // $.each(this.attributes, function(i, attrib){
-    //     //   $(NewElement).attr(attrib.name, attrib.value);
-    //     // });
-    //     $(this).replaceWith(function () {
-    //       return $(NewElement).append($obj.text());
-    //     });
-    //   }
-    // }
-    // doc.find('[data-role="outer"]').children()
-    // doc.find('section').each(removeIfNoImageEmpty)
-
     // remove empty break line
     doc.find('section').each(function () {
       var NewElement = $("<div />");
@@ -343,8 +245,6 @@ export default class ZhiHuAdapter {
     // doc.find('section').each(processEmptyLine)
     doc.find('div').each(processEmptyLine)
     doc.find('div').each(removeIfNoImageEmpty)
-    // doc.find('[powered-by]').each(removeIfEmpty)
-    // doc.find('[data-role="paragraph"]').each(highlightTitle)
 
     var processBr = function (idx, el) {
       var $obj = $(this)
@@ -353,25 +253,22 @@ export default class ZhiHuAdapter {
       }
     }
     doc.find('br').each(processBr)
-    // table {
-    //     margin-bottom: 10px;
-    //     border-collapse: collapse;
-    //     display: table;
-    //     width: 100%!important;
-    // }
-    // td, th {
-    //     word-wrap: break-word;
-    //     word-break: break-all;
-    //     padding: 5px 10px;
-    //     border: 1px solid #DDD;
-    // }
 
-    // console.log('found table', doc.find('table'))
     var tempDoc = $('<div>').append(doc.clone())
     post.content =
       tempDoc.children('div').length == 1
         ? tempDoc.children('div').html()
         : tempDoc.html()
+
+    // 清除多余的空行
+    const nodes = $(post.content)
+    let result = ""; // 结果字符串
+    $.each(nodes, function (i, node) {
+      if (node.nodeType != 3 || node.nodeValue.trim() != "") { // 如果不是空白的文本节点
+        result += node.outerHTML; // 拼接到结果字符串
+      }
+    });
+    post.content = result
 
     console.log('post.content', post.content)
     // div.remove();
