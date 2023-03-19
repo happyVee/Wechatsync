@@ -177,6 +177,7 @@ export default class ZhiHuAdapter {
     $('body').append(div)
 
     // post.content = post.content.replace(/\>\s+\</g,'');
+    console.log('preEditPost start post.content', post.content)
     div.html(post.content)
 
     // var org = $(post.content);
@@ -252,7 +253,8 @@ export default class ZhiHuAdapter {
         $obj.remove()
       }
     }
-    doc.find('br').each(processBr)
+    // 需要处理的是 <br /> 后出现 /n 的情况
+    // doc.find('br').each(processBr)
 
     var tempDoc = $('<div>').append(doc.clone())
     post.content =
@@ -268,9 +270,17 @@ export default class ZhiHuAdapter {
         result += node.outerHTML; // 拼接到结果字符串
       }
     });
+
+    // 需要处理的是 <br /> 后出现 /n 的情况
+    result = result.replace(/<br\n\r?|<br>\r\n?/g, "\n")
+    // 处理 </blockquote> 前出现 /n 的情况
+    result = result.replace(/\n\r?(?=<\/blockquote>)|\r\n?(?=<\/blockquote>)/g, "</blockquote>")
+    // 处理 </code>  前出现 /n 的情况
+    result = result.replace(/\n\r?(?=<\/code>)|\r\n?(?=<\/code>)/g, "</code>")
+
     post.content = result
 
-    console.log('post.content', post.content)
+    console.log('preEditPost end post.content', post.content)
     // div.remove();
     // this.addNotify(post)
   }
