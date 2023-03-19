@@ -1,0 +1,11 @@
+.idea/
+node_modules/
+build/
+md/
+build/devtool/
+.DS_Store
+WechatSync.zip
+*.iml
+yarn-error.log
+zip
+package-json.lock
