@@ -22,7 +22,7 @@ export default class JianShuAdapter {
       avatar: res.data.avatar,
       type: 'jianshu',
       displayName: '简书',
-      supportTypes: ['html'],
+      supportTypes: ['markdown', 'html'],
       home: 'https://www.jianshu.com/settings/basic',
       icon: 'https://www.jianshu.com/favicon.ico',
       notebooks: notebooks,
@@ -56,6 +56,7 @@ export default class JianShuAdapter {
   }
 
   async editPost(post_id, post) {
+
     var cacheVerions = NoteVersionCaches[post_id]
     var notebook_id = post.notebook_id ? post.notebook_id : defaultNoteBookId
 
@@ -82,7 +83,11 @@ export default class JianShuAdapter {
     }
 
     if (post.post_content) {
-      requestData.content = post.post_content
+      console.log('TurndownService', turndown)
+      var turndownService = new turndown()
+      turndownService.use(tools.turndownExt)
+      requestData.content = turndownService.turndown(post.post_content)
+      console.log('requestData.content', requestData.content)
     }
 
     if (post_id) {
@@ -118,8 +123,8 @@ export default class JianShuAdapter {
   }
 
   async uploadFile(file) {
-    const tokenReq = await axios.get('https://www.jianshu.com/upload_images/token.json?filename='+ new Date().getTime() +'.png')
-    if(tokenReq.data.token) {
+    const tokenReq = await axios.get('https://www.jianshu.com/upload_images/token.json?filename=' + new Date().getTime() + '.png')
+    if (tokenReq.data.token) {
       var blob = new Blob([file.bits], {
         type: file.type
       });
@@ -135,7 +140,7 @@ export default class JianShuAdapter {
         headers: { 'Content-Type': 'multipart/form-data' },
       })
 
-      if(!res.data.url) {
+      if (!res.data.url) {
         console.log(res.data);
         throw new Error('upload failed')
       }
@@ -195,7 +200,7 @@ export default class JianShuAdapter {
       var img = $obj.find('img')
       var brs = $obj.find('br')
       if (originalText == '') {
-        ;(function () {
+        ; (function () {
           if (img.length) return
           if (!brs.length) return
           $obj.remove()
@@ -269,7 +274,7 @@ export default class JianShuAdapter {
   }
 
   addPromotion(post) {
-    var sharcode = `<blockquote><p>本文使用 <a href="https://www.jianshu.com/p/5709df6fb58d" class="internal">文章同步助手</a> 同步</p></blockquote>`
-    post.content = post.content.trim() + `${sharcode}`
+    // var sharcode = `<blockquote><p>本文使用 <a href="https://www.jianshu.com/p/5709df6fb58d" class="internal">文章同步助手</a> 同步</p></blockquote>`
+    // post.content = post.content.trim() + `${sharcode}`
   }
 }

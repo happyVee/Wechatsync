@@ -54,7 +54,9 @@ export default class JuejinAdapter {
     console.log('TurndownService', turndown)
     var turndownService = new turndown()
     turndownService.use(tools.turndownExt)
+    //  post.markdown ||
     var markdown = turndownService.turndown(post.post_content)
+    console.log('markdown', markdown)
     const { data } = await axios.post('https://api.juejin.cn/content_api/v1/article_draft/create', {
       brief_content: '',
       category_id: '0',
@@ -94,7 +96,7 @@ export default class JuejinAdapter {
     var div = $('<div>')
     $('body').append(div)
     try {
-      console.log('zihu.Juejin')
+      console.log('Juejin')
       div.html(post.content)
       var doc = div
       tools.processDocCode(div)
@@ -113,7 +115,7 @@ export default class JuejinAdapter {
   }
 
   addPromotion(post) {
-    var sharcode = `<blockquote><p>本文使用 <a href="https://juejin.cn/post/6940875049587097631" class="internal">文章同步助手</a> 同步</p></blockquote>`
-    post.content = post.content.trim() + `${sharcode}`
+    // var sharcode = `<blockquote><p>本文使用 <a href="https://juejin.cn/post/6940875049587097631" class="internal">文章同步助手</a> 同步</p></blockquote>`
+    // post.content = post.content.trim() + `${sharcode}`
   }
 }

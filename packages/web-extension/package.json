@@ -6,7 +6,7 @@
   "scripts": {
     "start": "webpack --watch",
     "build": "webpack --env production",
-    "prebuilt": "webpack --config ./scripts/webpack.packDriverCode.js && node ./scripts/stringifyCodePack.js"
+    "prebuild": "webpack --config ./scripts/webpack.packDriverCode.js && node ./scripts/stringifyCodePack.js"
   },
   "author": "fun",
   "license": "ISC",

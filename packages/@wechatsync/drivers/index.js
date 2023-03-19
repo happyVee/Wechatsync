@@ -6,7 +6,6 @@ function importAll(r) {
     if (moduleName && moduleName !== 'BaseAdapter') {
       modules[moduleName] = module.default
     }
-    // console.log('moduleName', moduleName)
   })
   return modules
 }
