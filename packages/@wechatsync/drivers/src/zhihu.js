@@ -253,7 +253,7 @@ export default class ZhiHuAdapter {
         $obj.remove()
       }
     }
-    // 需要处理的是 <br /> 后出现 /n 的情况
+    // 需要处理的是 <br /> 后出现 \n 的情况
     // doc.find('br').each(processBr)
 
     var tempDoc = $('<div>').append(doc.clone())
@@ -271,11 +271,11 @@ export default class ZhiHuAdapter {
       }
     });
 
-    // 需要处理的是 <br /> 后出现 /n 的情况
+    // 需要处理的是 <br /> 后出现 \n 的情况
     result = result.replace(/<br\n\r?|<br>\r\n?/g, "\n")
-    // 处理 </blockquote> 前出现 /n 的情况
+    // 处理 </blockquote> 前出现 \n 的情况
     result = result.replace(/\n\r?(?=<\/blockquote>)|\r\n?(?=<\/blockquote>)/g, "</blockquote>")
-    // 处理 </code>  前出现 /n 的情况
+    // 处理 </code>  前出现 \n 的情况
     result = result.replace(/\n\r?(?=<\/code>)|\r\n?(?=<\/code>)/g, "</code>")
 
     post.content = result
