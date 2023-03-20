@@ -250,7 +250,7 @@ export default class JianShuAdapter {
         $obj.remove()
       }
     }
-    doc.find('br').each(processBr)
+    // doc.find('br').each(processBr)
     // table {
     //     margin-bottom: 10px;
     //     border-collapse: collapse;
@@ -271,6 +271,8 @@ export default class JianShuAdapter {
         ? tempDoc.children('div').html()
         : tempDoc.html()
     // div.remove();
+    // 需要处理的是 <br /> 后出现 \n 的情况
+    post.content = post.content.replace(/<br\n\r?|<br>\r\n?/g, "\n")
   }
 
   addPromotion(post) {
