@@ -9,7 +9,7 @@ export default class BilibiliAdapter {
     var res = await $.ajax({
       url: 'https://api.bilibili.com/x/web-interface/nav?build=0&mobi_app=web',
     })
-    if(!res.data.isLogin) {
+    if (!res.data.isLogin) {
       throw new Error('not login')
     }
     // console.log(res);
@@ -79,7 +79,7 @@ export default class BilibiliAdapter {
     var src = file.src
     var csrf = this.config.state.csrf
 
-    var uploadUrl ='https://api.bilibili.com/x/article/creative/article/upcover'
+    var uploadUrl = 'https://api.bilibili.com/x/article/creative/article/upcover'
     var file = new File([file.bits], 'temp', {
       type: file.type,
     })
@@ -123,7 +123,7 @@ export default class BilibiliAdapter {
       const pre = pres.eq(mindex)
       try {
         pre.after(pre.html()).remove()
-      } catch (e) {}
+      } catch (e) { }
     }
 
     tools.processDocCode(div)
@@ -134,7 +134,7 @@ export default class BilibiliAdapter {
       const pre = pres.eq(mindex)
       try {
         pre.remove()
-      } catch (e) {}
+      } catch (e) { }
     }
 
     try {
@@ -150,7 +150,7 @@ export default class BilibiliAdapter {
       const qqm = doc.find('qqmusic')
       qqm.next().remove()
       qqm.remove()
-    } catch (e) {}
+    } catch (e) { }
 
     post.content = $('<div>')
       .append(doc.clone())
@@ -163,8 +163,8 @@ export default class BilibiliAdapter {
   }
 
   addPromotion(post) {
-    var sharcode = `<blockquote><p>本文使用 <a href="https://www.bilibili.com/read/cv10352009" class="internal">文章同步助手</a> 同步</p></blockquote>`
-    post.content = post.content.trim() + `${sharcode}`
+    // var sharcode = `<blockquote><p>本文使用 <a href="https://www.bilibili.com/read/cv10352009" class="internal">文章同步助手</a> 同步</p></blockquote>`
+    // post.content = post.content.trim() + `${sharcode}`
   }
   //   <img class="" src="http://p2.pstatp.com/large/pgc-image/bc0a9fc8e595453083d85deb947c3d6e" data-ic="false" data-ic-uri="" data-height="1333" data-width="1000" image_type="1" web_uri="pgc-image/bc0a9fc8e595453083d85deb947c3d6e" img_width="1000" img_height="1333"></img>
 }
