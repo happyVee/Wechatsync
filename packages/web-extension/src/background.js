@@ -687,7 +687,6 @@ class Syner {
     console.log('addResp', addResp)
     if (addResp.status != 'success') {
       throw Error('create post failed')
-      return
     }
 
     postId = addResp.post_id ? addResp.post_id : addResp.response
@@ -703,7 +702,7 @@ class Syner {
       accounts: currentTask.accounts,
     })
 
-    var imageMaxRetry = 10
+    var imageMaxRetry = 3
 
     for (let mindex = 0; mindex < imags.length; mindex++) {
       const img = imags.eq(mindex)
