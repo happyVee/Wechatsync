@@ -83,7 +83,8 @@ export default class JuejinAdapter {
     const { data } = await axios.post('https://juejin.cn/image/urlSave', {
       url: src,
       headers: {
-        'Referer' : 'https://juejin.cn/editor/drafts'
+        Origin: 'https://juejin.cn',
+        Referer: 'https://juejin.cn/'
       }
     })
     return [
