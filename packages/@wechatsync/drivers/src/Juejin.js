@@ -81,7 +81,10 @@ export default class JuejinAdapter {
     var src = file.src
     var imageId = Date.now() + Math.floor(Math.random() * 1000)
     const { data } = await axios.post('https://juejin.cn/image/urlSave', {
-      url: src
+      url: src,
+      headers: {
+        'Referer' : 'https://juejin.cn/editor/drafts'
+      }
     })
     return [
       {
