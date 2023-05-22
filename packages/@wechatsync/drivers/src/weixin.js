@@ -46,14 +46,14 @@ export default class WeixinAdapter {
       post_id: 0,
     }
   }
-  
+
   async searchAccount({ keyword, begin=0, count=5 }) {
     var token = weixinMetaCache.token || '442135330'
     const apiURL = `https://mp.weixin.qq.com/cgi-bin/searchbiz?action=search_biz&begin=${begin}&count=${count}&query=${encodeURIComponent(keyword)}&token=${token}&lang=zh_CN&f=json&ajax=1`
     const response = await $.get(apiURL)
     return response
   }
-  
+
   async listArticle({ fakeid = '', begin=0, count=5}) {
   	var token = weixinMetaCache.token || '442135330'
     const apiURL = `https://mp.weixin.qq.com/cgi-bin/appmsg?action=list_ex&begin=${begin}&count=${count}&fakeid=${fakeid}&type=9&query=&token=${token}&lang=zh_CN&f=json&ajax=1`
@@ -102,7 +102,7 @@ export default class WeixinAdapter {
     console.log('editPost', post.post_thumbnail)
     var res = await $.ajax({
       url:
-        'https://mp.weixin.qq.com/cgi-bin/operate_appmsg?t=ajax-response&sub=create&type=10&token=' +
+        'https://mp.weixin.qq.com/cgi-bin/operate_appmsg?t=ajax-response&sub=create&type=77&token=' +
         weixinMetaCache.token +
         '&lang=zh_CN',
       type: 'POST',
@@ -348,7 +348,7 @@ export default class WeixinAdapter {
       }
     }
 
-    doc.find('br').each(processBr)
+    // doc.find('br').each(processBr)
     post.content = $('<div>')
       .append(
         "<section style='margin-left: 6px;margin-right: 6px;line-height: 1.75em;'>" +
@@ -356,7 +356,8 @@ export default class WeixinAdapter {
           '</section>'
       )
       .html()
-
+    // 需要处理的是 <br /> 后出现 \n 的情况
+    post.content = post.content.replace(/<br\n\r?|<br>\r\n?/g, "\n")
     console.log('post.content', post.content)
     var inlineCssHTML = juice.inlineContent(
       post.content,
