@@ -25,6 +25,7 @@ const {
   YuQueAdapter,
   XueQiuAdapter,
   IPFSAdapter,
+  RedbookAdapter,
 } = buildInDrivers
 
 var _cacheState = {}
@@ -163,6 +164,10 @@ export function getDriver(account) {
     return new YuQueAdapter(account)
   }
 
+  if (account.type == 'redbook') {
+    return new RedbookAdapter(account)
+  }
+
   throw Error('not supprt account type')
 }
 
@@ -208,6 +213,7 @@ export async function getPublicAccounts() {
     new YuQueAdapter(),
     new XueQiuAdapter(),
     new IPFSAdapter(),
+    new RedbookAdapter(),
   ]
 
   var customDiscuzEndpoints = ['https://www.51hanghai.com'];

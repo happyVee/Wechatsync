@@ -153,6 +153,8 @@ class Syner {
       '*://card.weibo.com/*',
       '*://mp.weixin.qq.com/*',
       '*://zhuanlan.zhihu.com/api/*',
+      '*://creator.xiaohongshu.com/*',
+      '*://edith.xiaohongshu.com/*',
       // '*://api.bilibili.com/*',
     ]
 
@@ -176,6 +178,16 @@ class Syner {
               origin: 'https://mp.toutiao.com',
               referer: 'https://mp.toutiao.com/profile_v4/graphic/publish',
             },
+            {
+              prefix: 'creator.xiaohongshu.com/api',
+              origin: 'https://creator.xiaohongshu.com',
+              referer: 'https://creator.xiaohongshu.com/creator/home',
+            },
+            {
+              prefix: 'edith.xiaohongshu.com',
+              origin: 'https://creator.xiaohongshu.com',
+              referer: 'https://creator.xiaohongshu.com',
+            },
           ]
 
           for (let index = 0; index < modifRules.length; index++) {
@@ -195,7 +207,7 @@ class Syner {
                   value: modifRule.referer,
                 })
               }
-              console.log('details.requestHeaders', modifRule, details)
+              console.log('details.requestHeaders after', modifRule, details)
             } else {
               // console.log('rule not macth', modifRule.prefix, details.url)
             }
