@@ -37,6 +37,7 @@ function sign(uri, data = null, ctime = null, a1 = "", b1 = "") {
 export default class RedbookAdapter {
   constructor() {
     this.name = 'redbook'
+    this.skipReadImage = true
     chrome.cookies.getAll({ domain: "xiaohongshu.com" }, function (cookies) {
       console.log(cookies)
     })
@@ -68,7 +69,7 @@ export default class RedbookAdapter {
   async addPost(post) {
     let uri = "/web_api/sns/v2/note"
     let host = "https://edith.xiaohongshu.com"
-    let data = JSON.parse("{\"common\":{\"type\":\"normal\",\"title\":\"14:30\",\"note_id\":\"\",\"desc\":\"\",\"source\":\"{\\\"type\\\":\\\"web\\\",\\\"ids\\\":\\\"\\\",\\\"extraInfo\\\":\\\"{\\\\\\\"subType\\\\\\\":\\\\\\\"\\\\\\\",\\\\\\\"systemId\\\\\\\":\\\\\\\"web\\\\\\\"}\\\"}\",\"business_binds\":\"{\\\"version\\\":1,\\\"noteId\\\":0,\\\"bizType\\\":0,\\\"noteOrderBind\\\":{},\\\"notePostTiming\\\":{\\\"postTime\\\":\\\"\\\"},\\\"noteCollectionBind\\\":{\\\"id\\\":\\\"\\\"}}\",\"ats\":[],\"hash_tag\":[],\"post_loc\":{},\"privacy_info\":{\"op_type\":1,\"type\":1}},\"image_info\":{\"images\":[{\"file_id\":\"spectrum/13AUQgglZB1gg272oxige-4Q0FUqGl5VPWu5jkS-dSJBlEU\",\"width\":620,\"height\":620,\"metadata\":{\"source\":-1},\"stickers\":{\"version\":2,\"floating\":[]},\"extra_info_json\":\"{\\\"mimeType\\\":\\\"image/jpeg\\\"}\"}]},\"video_info\":null}")
+    let data = JSON.parse("{\"common\":{\"type\":\"normal\",\"title\":\"测试23:40\",\"note_id\":\"\",\"desc\":\"测试23:40\",\"source\":\"{\\\"type\\\":\\\"web\\\",\\\"ids\\\":\\\"\\\",\\\"extraInfo\\\":\\\"{\\\\\\\"systemId\\\\\\\":\\\\\\\"web\\\\\\\"}\\\"}\",\"business_binds\":\"{\\\"version\\\":1,\\\"noteId\\\":0,\\\"bizType\\\":0,\\\"noteOrderBind\\\":{},\\\"notePostTiming\\\":{\\\"postTime\\\":\\\"\\\"},\\\"noteCollectionBind\\\":{\\\"id\\\":\\\"\\\"}}\",\"ats\":[],\"hash_tag\":[],\"post_loc\":{},\"privacy_info\":{\"op_type\":1,\"type\":1}},\"image_info\":{\"images\":[{\"file_id\":\"spectrum/5cKUhP5Lp6psHDfiPEmpwtyvqyQcdJclCqEShP78R9fCSYc\",\"width\":620,\"height\":620,\"metadata\":{\"source\":-1},\"stickers\":{\"version\":2,\"floating\":[]},\"extra_info_json\":\"{\\\"mimeType\\\":\\\"image/jpeg\\\"}\"}]},\"video_info\":null}")
     let a1 = "185f887325fgtq7x15a0o6l4k4yfdliau4agiujt400000445824"
     let signs = sign(uri, data, null, a1)
     console.log("signs====>", signs)
@@ -86,7 +87,6 @@ export default class RedbookAdapter {
       "data": JSON.stringify(data),
     };
     console.log("settings====>", settings)
-    debugger
     let res = await $.ajax(settings)
     console.log(res)
     if (!res.data.id) {
@@ -107,10 +107,23 @@ export default class RedbookAdapter {
 
   async uploadFile(file) {
     // 上传图片：调用平台 api 上传图片
+    return [
+      {
+        id: "123",
+        object_key: "upload_file.object_key",
+        url: 'https://www.xiaohongshu.com/favicon.ico',
+        // url: 'https://pic1.zhimg.com/80/' + upload_file.object_key + '_hd.png',
+      },
+    ]
   }
 
   async editPost(postId, post) {
     // 更新文章：调用平台 api 更新文章（同步助手内部通过该接口替换文章内图片地址）
+    return {
+      status: 'success',
+      post_id: postId,
+      draftLink: 'https://www.xiaohongshu.com/discovery/item/' + postId,
+    }
   }
 
 }
