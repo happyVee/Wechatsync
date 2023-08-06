@@ -70,7 +70,7 @@ export default class RedbookAdapter {
     let host = "https://edith.xiaohongshu.com"
     let data = JSON.parse("{\"common\":{\"type\":\"normal\",\"title\":\"14:30\",\"note_id\":\"\",\"desc\":\"\",\"source\":\"{\\\"type\\\":\\\"web\\\",\\\"ids\\\":\\\"\\\",\\\"extraInfo\\\":\\\"{\\\\\\\"subType\\\\\\\":\\\\\\\"\\\\\\\",\\\\\\\"systemId\\\\\\\":\\\\\\\"web\\\\\\\"}\\\"}\",\"business_binds\":\"{\\\"version\\\":1,\\\"noteId\\\":0,\\\"bizType\\\":0,\\\"noteOrderBind\\\":{},\\\"notePostTiming\\\":{\\\"postTime\\\":\\\"\\\"},\\\"noteCollectionBind\\\":{\\\"id\\\":\\\"\\\"}}\",\"ats\":[],\"hash_tag\":[],\"post_loc\":{},\"privacy_info\":{\"op_type\":1,\"type\":1}},\"image_info\":{\"images\":[{\"file_id\":\"spectrum/13AUQgglZB1gg272oxige-4Q0FUqGl5VPWu5jkS-dSJBlEU\",\"width\":620,\"height\":620,\"metadata\":{\"source\":-1},\"stickers\":{\"version\":2,\"floating\":[]},\"extra_info_json\":\"{\\\"mimeType\\\":\\\"image/jpeg\\\"}\"}]},\"video_info\":null}")
     let a1 = "185f887325fgtq7x15a0o6l4k4yfdliau4agiujt400000445824"
-    let signs = sign(uri, data, a1 = a1)
+    let signs = sign(uri, data, null, a1)
     console.log("signs====>", signs)
     let settings = {
       "url": `${host}${uri}`,
