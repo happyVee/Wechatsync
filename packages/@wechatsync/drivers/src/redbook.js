@@ -34,6 +34,23 @@ function sign(uri, data = null, ctime = null, a1 = "", b1 = "") {
   }
 }
 
+
+function getCookiesA1() {
+  let url = "https://creator.xiaohongshu.com/";
+  let name = "a1";
+  
+  return new Promise((resolve, reject) => {
+    chrome.cookies.get({ url: url, name: name }, function(cookie) {
+      if (chrome.runtime.lastError) {
+        reject(chrome.runtime.lastError);
+      } else {
+        resolve(cookie ? cookie.value : null);
+      }
+    });
+  });
+}
+
+
 export default class RedbookAdapter {
   constructor() {
     this.name = 'redbook'
@@ -69,8 +86,39 @@ export default class RedbookAdapter {
   async addPost(post) {
     let uri = "/web_api/sns/v2/note"
     let host = "https://edith.xiaohongshu.com"
-    let data = JSON.parse("{\"common\":{\"type\":\"normal\",\"title\":\"测试23:40\",\"note_id\":\"\",\"desc\":\"测试23:40\",\"source\":\"{\\\"type\\\":\\\"web\\\",\\\"ids\\\":\\\"\\\",\\\"extraInfo\\\":\\\"{\\\\\\\"systemId\\\\\\\":\\\\\\\"web\\\\\\\"}\\\"}\",\"business_binds\":\"{\\\"version\\\":1,\\\"noteId\\\":0,\\\"bizType\\\":0,\\\"noteOrderBind\\\":{},\\\"notePostTiming\\\":{\\\"postTime\\\":\\\"\\\"},\\\"noteCollectionBind\\\":{\\\"id\\\":\\\"\\\"}}\",\"ats\":[],\"hash_tag\":[],\"post_loc\":{},\"privacy_info\":{\"op_type\":1,\"type\":1}},\"image_info\":{\"images\":[{\"file_id\":\"spectrum/5cKUhP5Lp6psHDfiPEmpwtyvqyQcdJclCqEShP78R9fCSYc\",\"width\":620,\"height\":620,\"metadata\":{\"source\":-1},\"stickers\":{\"version\":2,\"floating\":[]},\"extra_info_json\":\"{\\\"mimeType\\\":\\\"image/jpeg\\\"}\"}]},\"video_info\":null}")
-    let a1 = "185f887325fgtq7x15a0o6l4k4yfdliau4agiujt400000445824"
+    let data = {
+      "common":{
+          "type":"normal",
+          "title": post.post_title,
+          "note_id":"",
+          "desc": post.desc ?? post.post_title,
+          "source":"{\"type\":\"web\",\"ids\":\"\",\"extraInfo\":\"{\\\"systemId\\\":\\\"web\\\"}\"}",
+          "business_binds":"{\"version\":1,\"noteId\":0,\"bizType\":0,\"noteOrderBind\":{},\"notePostTiming\":{\"postTime\":\"\"},\"noteCollectionBind\":{\"id\":\"\"}}",
+          "ats":[],
+          "hash_tag":[],
+          "post_loc":{},
+          "privacy_info":{ "op_type":1, "type":1 }
+      },
+      "image_info":{
+          "images":[
+              {
+                  "file_id":"spectrum/1040g0k030nfd7johmoeg49vgio3nhkbg6di5kpo",
+                  "width":620,
+                  "height":620,
+                  "metadata":{
+                      "source":-1
+                  },
+                  "stickers":{
+                      "version":2,
+                      "floating":[]
+                  },
+                  "extra_info_json":"{\"mimeType\":\"image/jpeg\"}"
+              }
+          ]
+      },
+      "video_info":null
+    }
+    let a1 = await getCookiesA1()
     let signs = sign(uri, data, null, a1)
     console.log("signs====>", signs)
     let settings = {
