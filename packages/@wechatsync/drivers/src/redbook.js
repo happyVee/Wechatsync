@@ -1,5 +1,32 @@
 // import CryptoJS from 'crypto-js';
 
+const axios = require('axios')
+
+function readFileToBase64(url) {
+  return new Promise((resolve, reject) => {
+    ;(async () => {
+      let body = null
+      try {
+        const req = await axios.get(url, { responseType: 'blob' })
+        body = req.data
+      } catch (e) {
+        return reject(e)
+      }
+      if (body != null) {
+        const reader = new FileReader()
+        reader.readAsDataURL(body)
+        reader.onloadend = function () {
+          var base64data = reader.result
+          resolve(base64data)
+        }
+        reader.onerror = function (e) {
+          reject(e)
+        }
+      }
+    })()
+  })
+}
+
 function signXs(n) {
   let m = "";
   let d = "A4NjFqYu5wPHsO0XTdDgMa2r1ZQocVte9UJBvk6/7=yRnhISGKblCWi+LpfE8xzm3";
@@ -51,6 +78,61 @@ function getCookiesA1() {
 }
 
 
+async function getUploadFilesPermit(file_type, count = 1) {
+  const uri = "/api/media/v1/upload/web/permit";
+  const host = "https://edith.xiaohongshu.com"
+  const params = {
+      biz_name: "spectrum",
+      scene: file_type,
+      file_count: count,
+      version: "1",
+      source: "web",
+  };
+  
+  // 将参数对象转换为URL查询字符串
+  const queryString = new URLSearchParams(params).toString();
+  
+  // 发送GET请求
+  const response = await $.get(`${host}${uri}?${queryString}`);
+  
+  // 检查响应是否成功
+  if (!response.code === 0) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+  }
+  
+  // 解析响应体为JSON
+  const data = response.data;
+  
+  const temp_permit = data.uploadTempPermits[0];
+  const fileId = temp_permit.fileIds[0];
+  const token = temp_permit.token;
+  console.log("fileId: " + fileId, "token: "  + token)
+  
+  return {fileId, token};
+}
+
+
+async function uploadFile(fileId, token, file, contentType = 'image/jpeg') {
+  const url = "https://ros-upload.xiaohongshu.com/" + fileId;
+  const headers = {
+      "X-Cos-Security-Token": token,
+      "Content-Type": contentType
+  };
+
+  // 使用 fetch API 发送 PUT 请求
+  const response = await fetch(url, {
+      method: 'PUT',
+      headers: headers,
+      body: file
+  });
+
+  // 检查响应是否成功
+  if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+  }
+  
+}
+
 export default class RedbookAdapter {
   constructor() {
     this.name = 'redbook'
@@ -84,6 +166,8 @@ export default class RedbookAdapter {
   }
 
   async addPost(post) {
+    debugger
+    let images = await this.uploadImages(post)
     let uri = "/web_api/sns/v2/note"
     let host = "https://edith.xiaohongshu.com"
     let data = {
@@ -100,21 +184,7 @@ export default class RedbookAdapter {
           "privacy_info":{ "op_type":1, "type":1 }
       },
       "image_info":{
-          "images":[
-              {
-                  "file_id":"spectrum/1040g0k030nfd7johmoeg49vgio3nhkbg6di5kpo",
-                  "width":620,
-                  "height":620,
-                  "metadata":{
-                      "source":-1
-                  },
-                  "stickers":{
-                      "version":2,
-                      "floating":[]
-                  },
-                  "extra_info_json":"{\"mimeType\":\"image/jpeg\"}"
-              }
-          ]
+          "images": images
       },
       "video_info":null
     }
@@ -174,4 +244,55 @@ export default class RedbookAdapter {
     }
   }
 
+  async uploadImages(post) {
+    // 上传图片：调用平台 api 上传图片
+    var doc = $(post.content)
+    var imags = doc.find('img')
+    console.log('upload images', imags.length)
+
+    const images = [];
+
+    for (let mindex = 0; mindex < imags.length; mindex++) {
+      console.log('upload images, num: ', mindex)
+      const img = imags.eq(mindex)
+      let imgSRC = img.attr('data-src')
+      if (!imgSRC) {
+        imgSRC = img.attr('data-original')
+      }
+
+      if (!imgSRC) {
+        imgSRC = img.attr('src')
+      }
+
+      let src = imgSRC
+      
+      try {
+        var sourceIsBase64 = src.indexOf(';base64,') > -1;
+        var dataURL = sourceIsBase64 ? src : await readFileToBase64(src)
+        var dataURLPairs = dataURL.split(',')
+        var fileType = dataURLPairs[0].replace('data:', '').split(';')[0]
+        var baseCode = dataURLPairs[1]
+        var type = fileType || 'image/png'
+        var bits = $.xmlrpc.binary.fromBase64(baseCode)
+
+        var file = new File([bits], 'temp', {
+          type: type
+        });
+
+        const { fileId, token } = await getUploadFilesPermit("image", 1)
+        await uploadFile(fileId, token, file, type)
+        images.push({
+          "file_id": fileId,
+          "metadata": {"source": -1},
+          "stickers": {"version": 2, "floating": []},
+          "extra_info_json": '{"mimeType":"image/jpeg"}',
+        });
+      } catch (error) {
+        console.log('upload images fail, num: ', mindex)
+        console.log(error)
+      }
+    }
+
+    return images;
+  }
 }

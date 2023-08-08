@@ -194,10 +194,12 @@ class Syner {
             const modifRule = modifRules[index]
             if (details.url.indexOf(modifRule.prefix) > -1) {
               var foundRefereHeader = false
+              var foundOriginHeader = false
               for (var i = 0; i < details.requestHeaders.length; ++i) {
                 if (details.requestHeaders[i].name === 'Referer')
                   foundRefereHeader = true
                 if (details.requestHeaders[i].name === 'Origin') {
+                  foundOriginHeader = true
                   details.requestHeaders[i].value = modifRule.origin
                 }
               }
@@ -205,6 +207,12 @@ class Syner {
                 details.requestHeaders.push({
                   name: 'Referer',
                   value: modifRule.referer,
+                })
+              }
+              if (!foundOriginHeader) {
+                details.requestHeaders.push({
+                  name: 'Origin',
+                  value: modifRule.origin,
                 })
               }
               console.log('details.requestHeaders after', modifRule, details)
