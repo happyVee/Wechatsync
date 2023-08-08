@@ -130,7 +130,7 @@ async function uploadFile(fileId, token, file, contentType = 'image/jpeg') {
   if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
   }
-  
+
 }
 
 export default class RedbookAdapter {
@@ -166,7 +166,6 @@ export default class RedbookAdapter {
   }
 
   async addPost(post) {
-    debugger
     let images = await this.uploadImages(post)
     let uri = "/web_api/sns/v2/note"
     let host = "https://edith.xiaohongshu.com"
